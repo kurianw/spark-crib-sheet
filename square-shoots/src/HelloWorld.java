@@ -36,7 +36,7 @@ public class HelloWorld extends Applet implements KeyListener, Runnable {
 		 player = new Player();
 		 player.setColor("#ff0000","#1b8754");
 		 player2 = new Player();
-		 player2.setColor("#0000ff","#1b8754");
+		 player2.setColor("#0000ff","#dda22c");
          while (true) {
              repaint(); 
              player.update();
@@ -59,12 +59,12 @@ public class HelloWorld extends Applet implements KeyListener, Runnable {
 	 }
 	public void paint(Graphics g) {
 		//Characters
-		paintcharacter(g, 470+ (int)player2.getYposition(), 720+ (int)player2.getXposition(),(int)player2.setColor("#ff0000"));  //Red
-		g.setColor((int)player2.getColor("#1b8754"));
+		paintcharacter(g, 470+ (int)player2.getYposition(), 720+ (int)player2.getXposition(),"#ff0000");  //Red
+		g.setColor(Color.decode(player2.GetEyeColor()));
 		g.fillRect(720+ (int)player2.getXposition(), 472+ (int)player2.getYposition(), 5, 12);
 		
-		paintcharacter(g, 470+ (int)player.getXposition(), 150+ (int)player.getXposition(),(int)player.getColor("#0000ff")); //Blue
-		g.setColor((int)player.getColor("#dda22c"));
+		paintcharacter(g, 470+ (int)player.getXposition(), 150+ (int)player.getXposition(),"#0000ff"); //Blue
+		g.setColor(Color.decode(player.GetEyeColor()));
 		g.fillRect(175+ (int)player.getXposition(), 472+ (int)player.getXposition(), 5, 12);		
 		//Stage
 		g.setColor(Color.BLACK);

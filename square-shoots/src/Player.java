@@ -33,6 +33,9 @@ public void setColor( String color, String eyes){
 	this.color = color;
 	this.eyes = eyes;
 };
+public String GetEyeColor() {
+	return eyes;
+}
 public double getYposition(){
 	return yposition;
 };
