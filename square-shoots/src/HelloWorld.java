@@ -4,14 +4,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 public class HelloWorld extends Applet implements KeyListener, Runnable {
 	// Variables
-	Thread runner;
-	 int xposition = 0;
-	int xspeed = 0;
-	int xposition2 = 0;
-	double yspeed = 0;
-	double g = .005;
-	double yposition = 0;
-	double yposition2 = 0;
+	Thread runner;	
 	public Player player;
 	public Player player2;
 	// Methods
@@ -40,32 +33,14 @@ public class HelloWorld extends Applet implements KeyListener, Runnable {
          while (true) {
              repaint(); 
              player.update();
-             player2.update();
-             yposition = yposition - yspeed;
-             xposition = xposition + xspeed;
-             yposition2 = yposition2 - yspeed;
-             xposition2 = xposition2 + xspeed;
-             if (yposition < 0) {
-            	 if (yposition2 < 0) 
-            	 // calculate gravity's affect
-            	 yspeed = yspeed - g;
-             }
-             else {
-            	 yposition = 0;
-            	 yposition2 = 0;
-             }
+             player2.update();             
              try {Thread.sleep(10);} catch (Exception ex) {}
              }
 	 }
 	public void paint(Graphics g) {
 		//Characters
-		paintcharacter(g, 470+ (int)player2.getYposition(), 720+ (int)player2.getXposition(),"#ff0000");  //Red
-		g.setColor(Color.decode(player2.GetEyeColor()));
-		g.fillRect(720+ (int)player2.getXposition(), 472+ (int)player2.getYposition(), 5, 12);
-		
-		paintcharacter(g, 470+ (int)player.getXposition(), 150+ (int)player.getXposition(),"#0000ff"); //Blue
-		g.setColor(Color.decode(player.GetEyeColor()));
-		g.fillRect(175+ (int)player.getXposition(), 472+ (int)player.getXposition(), 5, 12);		
+		paintPlayer2(g,player2);		
+		paintPlayer2(g, player);		
 		//Stage
 		g.setColor(Color.BLACK);
 		g.fillRect(150, 500, 600, 25);
@@ -79,9 +54,12 @@ public class HelloWorld extends Applet implements KeyListener, Runnable {
 		
 	
 	}
-	public void paintcharacter(Graphics g, int y, int x, String c) {
-		g.setColor(Color.decode(c));
-		g.fillRect(x, y, 30, 30);
+
+	private void paintPlayer2(Graphics g, Player player) {		
+		g.setColor(Color.decode(player.getBodyColor()));
+		g.fillRect(150+ (int)player.getXposition(), 470+ (int)player.getYposition(), 30, 30);
+		g.setColor(Color.decode(player.GetEyeColor()));
+		g.fillRect(175+ (int)player.getXposition(), 472+ (int)player.getYposition(), 5, 12);
 	}
 
 	public Polygon getHexagon(int x, int y, int size) {
@@ -101,28 +79,33 @@ public class HelloWorld extends Applet implements KeyListener, Runnable {
 	@Override
 	public void keyPressed(KeyEvent e) {
 		if (e.getKeyCode() == 37){
-			xspeed = -1;
+			player.moveLeft();
 			
 		} else if (e.getKeyCode() == 39) {
-			xspeed = 1;
+			player.moveRight();;
 		}
 		else if (e.getKeyCode() == 38){
-			yspeed =1;
+			player.jump();
 			
 		} else if (e.getKeyCode() == 68) {
-			xspeed =1;
+			player2.moveRight();
 			
 		} else if (e.getKeyCode() == 65){
-			xspeed = -1;
+			player2.moveLeft();;
 			
 		} else if (e.getKeyCode() == 87) {
-			yspeed = 1;
+			player2.jump();
 		}
 	}
 
 	@Override
 	public void keyReleased(KeyEvent e) {
-		xspeed=0;
+		if (e.getKeyCode() == 37){
+			player.horizontalStop();
+			
+		} else if (e.getKeyCode() == 39) {
+			player.horizontalStop();
+		}		
 	}
 }
 //box around stage and other player stuffs

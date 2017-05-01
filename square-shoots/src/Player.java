@@ -17,6 +17,9 @@ public void moveLeft(){
 public void moveRight(){
 	xspeed = 1;
 }
+public void horizontalStop() {
+	xspeed = 0;
+}
 
 public void update(){
 	   yposition = yposition - yspeed;
@@ -29,10 +32,15 @@ public void update(){
       	 yposition = 0;
        }
 };
-public void setColor( String color, String eyes){
+public void setColor(String color, String eyes){
 	this.color = color;
 	this.eyes = eyes;
 };
+
+public String getBodyColor() {
+	return color;
+}
+
 public String GetEyeColor() {
 	return eyes;
 }
