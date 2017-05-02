@@ -1,3 +1,5 @@
+import java.awt.Color;
+import java.awt.Graphics;
 
 public class Player {
 public int xposition;
@@ -49,6 +51,14 @@ public double getYposition(){
 };
 public double getXposition(){
 	return xposition;
-}	
+}
+
+void render(Graphics g) {		
+	g.setColor(Color.decode(getBodyColor()));
+	g.fillRect(150+ (int)getXposition(), 470+ (int)getYposition(), 30, 30);
+	g.setColor(Color.decode(GetEyeColor()));
+	g.fillRect(175+ (int)getXposition(), 472+ (int)getYposition(), 5, 12);
+}
+
 }
 
