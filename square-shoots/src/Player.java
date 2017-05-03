@@ -12,6 +12,11 @@ public class Player extends Collidable {
 	private static final int EYE_VERTICAL_OFFSET = 2;
 	private static final int EYE_WIDTH = 5;
 	private static final int EYE_HEIGHT = 12;
+	
+	// Direction Enum
+	public enum Direction {
+		RIGHT, LEFT
+	}
 
 	// Variables
 	public int xspeed;
@@ -19,9 +24,12 @@ public class Player extends Collidable {
 	public String color;
 	public String eyes;	
 
+	// private variables
 	private int old_xposition;
 	private double old_yposition;
-	public Player(int xposition, double yposition, String color, String eyes) {
+	private Direction shot_directions;
+	
+	public Player(int xposition, double yposition, String color, String eyes, Direction start_direction) {
 		this.color = color;
 		this.eyes = eyes;
 		this.xposition = xposition;
@@ -34,7 +42,8 @@ public class Player extends Collidable {
 		yspeed = 1;
 	};
 
-	public void moveLeft() {		
+	public void moveLeft() {
+		
 		xspeed = -1;
 	};
 
@@ -97,8 +106,8 @@ public class Player extends Collidable {
 
 	public void resolve(ArrayList<Collidable> others) {		
 		for (Collidable other : others) {
-			Player xOnlyPlayer = new Player(xposition, old_yposition, "", "");
-			Player yOnlyPlayer = new Player(old_xposition, yposition, "", "");
+			Player xOnlyPlayer = new Player(xposition, old_yposition, "", "", Direction.RIGHT);
+			Player yOnlyPlayer = new Player(old_xposition, yposition, "", "", Direction.RIGHT);
 			if (xOnlyPlayer.collides(other, false)) {
 				xposition = resolveHorizontalAxis(xposition, other);
 			}
@@ -136,5 +145,9 @@ public class Player extends Collidable {
 			}
 		}
 		return new_yposition;
+	}
+
+	public void shoot() {
+		// TODO create a shot.		
 	}
 }
