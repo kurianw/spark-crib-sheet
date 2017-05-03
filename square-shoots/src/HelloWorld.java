@@ -5,11 +5,16 @@ import java.awt.event.KeyListener;
 import java.util.ArrayList;
 
 public class HelloWorld extends Applet implements KeyListener, Runnable {
+	// Constants
+	public static final int LEFT_WORLD_ORIGIN = 135;
+	public static final int TOP_WORLD_ORIGIN = 195;
 	// Variables
 	Thread runner;
 	public Player player;
 	public Player player2;
 	public ArrayList<StageComponent> stage;
+	ArrayList<Collidable> player_potential_barriers; 
+	ArrayList<Collidable> player2_potential_barriers; 
 
 	// Methods
 	public void start() {
@@ -19,6 +24,7 @@ public class HelloWorld extends Applet implements KeyListener, Runnable {
 		}
 	}
 
+	@SuppressWarnings("deprecation")
 	public void stop() {
 		if (runner != null) {
 			runner.stop();
@@ -29,21 +35,29 @@ public class HelloWorld extends Applet implements KeyListener, Runnable {
 	public void run() {
 		this.addKeyListener(this);
 		setFocusable(true);
-		player = new Player("#ff0000", "#1b8754");
-		player.setPosition(570, 0);
-		player2 = new Player("#0000ff", "#dda22c");
+		player = new Player(585, 275, "#ff0000", "#1b8754");
+		player2 = new Player(15, 275, "#0000ff", "#dda22c");
 		stage = new ArrayList<StageComponent>();
-		stage.add(new StageComponent(150, 500, 600, 25));
-		stage.add(new StageComponent(250, 400, 400, 25));
-		stage.add(new StageComponent(150, 300, 250, 25));
-		stage.add(new StageComponent(500, 300, 250, 25));
-		stage.add(new StageComponent(135, 195, 15, 330));
-		stage.add(new StageComponent(750, 195, 15, 330));
-		stage.add(new StageComponent(135, 195, 630, 15));
+		stage.add(new StageComponent(15, 305, 600, 25));
+		stage.add(new StageComponent(115, 305, 400, 25));
+		stage.add(new StageComponent(15, 105, 250, 25)); 
+		stage.add(new StageComponent(365, 105, 250, 25));
+		stage.add(new StageComponent(0, 0, 15, 330));
+		stage.add(new StageComponent(615, 0, 15, 330)); 
+		stage.add(new StageComponent(0, 0, 630, 15));
+		
+		player_potential_barriers = new ArrayList<Collidable>();
+		player_potential_barriers.addAll(stage);
+		player_potential_barriers.add(player2);
+		
+		player2_potential_barriers = new ArrayList<Collidable>();
+		player2_potential_barriers.addAll(stage);
+		player2_potential_barriers.add(player);
+		
 		while (true) {
 			repaint();
-			player.update();
-			player2.update();
+			player.update(player_potential_barriers, true);
+			player2.update(player2_potential_barriers, false);									
 			try {
 				Thread.sleep(10);
 			} catch (Exception ex) {
