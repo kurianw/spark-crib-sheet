@@ -27,13 +27,14 @@ public class Player extends Collidable {
 	// private variables
 	private int old_xposition;
 	private double old_yposition;
-	private Direction shot_directions;
+	private Direction direction;
 	
 	public Player(int xposition, double yposition, String color, String eyes, Direction start_direction) {
-		this.color = color;
-		this.eyes = eyes;
 		this.xposition = xposition;
 		this.yposition = yposition;
+		this.color = color;
+		this.eyes = eyes;
+		this.direction = start_direction;
 		this.width = BODY_WIDTH;
 		this.height = BODY_HEIGHT;		
 	};
@@ -43,11 +44,12 @@ public class Player extends Collidable {
 	};
 
 	public void moveLeft() {
-		
+		direction = Direction.LEFT;
 		xspeed = -1;
 	};
 
-	public void moveRight() {		
+	public void moveRight() {
+		direction = Direction.RIGHT;
 		xspeed = 1;
 	}
 
@@ -147,7 +149,7 @@ public class Player extends Collidable {
 		return new_yposition;
 	}
 
-	public void shoot() {
-		// TODO create a shot.		
+	public Shot shoot() {
+		return new Shot(xposition, yposition, eyes, direction);		
 	}
 }

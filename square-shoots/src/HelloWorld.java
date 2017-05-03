@@ -19,6 +19,7 @@ public class HelloWorld extends Applet implements KeyListener, Runnable {
 	public ArrayList<StageComponent> stage;
 	ArrayList<Collidable> player_potential_barriers;
 	ArrayList<Collidable> player2_potential_barriers;
+	ArrayList<Shot> shots;
 
 	// Methods
 	public void start() {
@@ -58,10 +59,14 @@ public class HelloWorld extends Applet implements KeyListener, Runnable {
 		player2_potential_barriers.addAll(stage);
 		player2_potential_barriers.add(player);
 
+		shots = new ArrayList<Shot>();
 		while (true) {
 			repaint();
 			player.update(player_potential_barriers, true);
 			player2.update(player2_potential_barriers, false);
+			for (Shot shot: shots) {
+				shot.update();
+			}
 			try {
 				Thread.sleep(10);
 			} catch (Exception ex) {
@@ -76,6 +81,10 @@ public class HelloWorld extends Applet implements KeyListener, Runnable {
 		// Stage
 		for (StageComponent component : stage) {
 			component.render(g);
+		}
+		// Shots
+		for (Shot shot: shots) {
+			shot.render(g);
 		}
 	}
 
@@ -93,7 +102,7 @@ public class HelloWorld extends Applet implements KeyListener, Runnable {
 		} else if (e.getKeyCode() == KeyEvent.VK_UP) {
 			player.jump();
 		} else if (e.getKeyCode() == KeyEvent.VK_DOWN) {
-			player.shoot();
+			shots.add(player.shoot());
 
 		} else if (e.getKeyCode() == KeyEvent.VK_D) {
 			player2.moveRight();
@@ -102,7 +111,7 @@ public class HelloWorld extends Applet implements KeyListener, Runnable {
 		} else if (e.getKeyCode() == KeyEvent.VK_W) {
 			player2.jump();
 		} else if (e.getKeyCode() == KeyEvent.VK_S) {
-			player2.shoot();
+			shots.add(player2.shoot());
 		}
 	}
 
