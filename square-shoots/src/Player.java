@@ -12,7 +12,7 @@ public class Player extends Collidable {
 	private static final int EYE_VERTICAL_OFFSET = 2;
 	private static final int EYE_WIDTH = 5;
 	private static final int EYE_HEIGHT = 12;
-	
+
 	// Direction Enum
 	public enum Direction {
 		RIGHT, LEFT
@@ -22,13 +22,13 @@ public class Player extends Collidable {
 	public int xspeed;
 	public double yspeed;
 	public String color;
-	public String eyes;	
+	public String eyes;
 
 	// private variables
 	private int old_xposition;
 	private double old_yposition;
 	private Direction direction;
-	
+
 	public Player(int xposition, double yposition, String color, String eyes, Direction start_direction) {
 		this.xposition = xposition;
 		this.yposition = yposition;
@@ -36,10 +36,10 @@ public class Player extends Collidable {
 		this.eyes = eyes;
 		this.direction = start_direction;
 		this.width = BODY_WIDTH;
-		this.height = BODY_HEIGHT;		
+		this.height = BODY_HEIGHT;
 	};
 
-	public void jump() {		
+	public void jump() {
 		yspeed = 1;
 	};
 
@@ -61,9 +61,9 @@ public class Player extends Collidable {
 		old_xposition = xposition;
 		old_yposition = yposition;
 		yposition = yposition - yspeed;
-		xposition = xposition + xspeed;		
+		xposition = xposition + xspeed;
 		ArrayList<Collidable> collisions = new ArrayList<Collidable>();
-		for (Collidable potential_barrier : potential_collisions) {			
+		for (Collidable potential_barrier : potential_collisions) {
 			if (collides(potential_barrier, false)) {
 				collisions.add(potential_barrier);
 			}
@@ -93,20 +93,7 @@ public class Player extends Collidable {
 		return xposition;
 	}
 
-	void render(Graphics g) {
-		// Fill Body
-		g.setColor(Color.decode(getBodyColor()));
-		int graphical_xposition = (int) (HelloWorld.LEFT_WORLD_ORIGIN + getXposition());
-		int graphical_yposition = (int) (HelloWorld.TOP_WORLD_ORIGIN + getYposition());
-		g.fillRect(graphical_xposition, graphical_yposition, width, height);
-
-		// Fill Eyes
-		g.setColor(Color.decode(getEyeColor()));
-		g.fillRect(EYE_HORIZONTAL_OFFSET + graphical_xposition, EYE_VERTICAL_OFFSET + graphical_yposition, EYE_WIDTH,
-				EYE_HEIGHT);
-	}
-
-	public void resolve(ArrayList<Collidable> others) {		
+	public void resolve(ArrayList<Collidable> others) {
 		for (Collidable other : others) {
 			Player xOnlyPlayer = new Player(xposition, old_yposition, "", "", Direction.RIGHT);
 			Player yOnlyPlayer = new Player(old_xposition, yposition, "", "", Direction.RIGHT);
@@ -114,7 +101,7 @@ public class Player extends Collidable {
 				xposition = resolveHorizontalAxis(xposition, other);
 			}
 			if (yOnlyPlayer.collides(other, false))
-			yposition = resolveVerticalAxis(yposition, other);
+				yposition = resolveVerticalAxis(yposition, other);
 		}
 	}
 
@@ -126,7 +113,7 @@ public class Player extends Collidable {
 				xspeed = 0;
 			}
 		} else if (xspeed > 0) { // right
-			if (new_xposition + width > other.xposition) {			
+			if (new_xposition + width > other.xposition) {
 				new_xposition = other.xposition - width - 1;
 				xspeed = 0;
 			}
@@ -134,11 +121,11 @@ public class Player extends Collidable {
 		return new_xposition;
 	};
 
-	private double resolveVerticalAxis(double new_yposition, Collidable other) {		
+	private double resolveVerticalAxis(double new_yposition, Collidable other) {
 		if (yspeed > 0) { // up
 			if (new_yposition < other.yposition + other.height) {
-				new_yposition = (int) (other.yposition + other.height) + 1;				
-				yspeed = 0;				
+				new_yposition = (int) (other.yposition + other.height) + 1;
+				yspeed = 0;
 			}
 		} else if (yspeed < 0) { // down
 			if (new_yposition + height > other.yposition) {
@@ -150,6 +137,20 @@ public class Player extends Collidable {
 	}
 
 	public Shot shoot() {
-		return new Shot(xposition, yposition, eyes, direction);		
+		int starting_shot_offset = (direction == Direction.LEFT ? 0 : EYE_HORIZONTAL_OFFSET + EYE_WIDTH);
+		return new Shot(starting_shot_offset + xposition, yposition, eyes, direction);
+	}
+
+	void render(Graphics g) {
+		// Fill Body
+		g.setColor(Color.decode(getBodyColor()));
+		int graphical_xposition = (int) (HelloWorld.LEFT_WORLD_ORIGIN + getXposition());
+		int graphical_yposition = (int) (HelloWorld.TOP_WORLD_ORIGIN + getYposition());
+		g.fillRect(graphical_xposition, graphical_yposition, width, height);
+
+		// Fill Eyes
+		int eye_offset = (direction == Direction.LEFT ? 0 : EYE_HORIZONTAL_OFFSET);
+		g.setColor(Color.decode(getEyeColor()));
+		g.fillRect(eye_offset + graphical_xposition, EYE_VERTICAL_OFFSET + graphical_yposition, EYE_WIDTH, EYE_HEIGHT);
 	}
 }
