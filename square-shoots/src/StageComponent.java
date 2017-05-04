@@ -12,8 +12,8 @@ public class StageComponent extends Collidable {
 	
 	void render(Graphics g) {		
 		g.setColor(Color.BLACK);
-		int graphical_xposition = HelloWorld.LEFT_WORLD_ORIGIN + xposition;
-		int graphical_yposition = HelloWorld.TOP_WORLD_ORIGIN + (int) yposition;
+		int graphical_xposition = SquareShoots.LEFT_WORLD_ORIGIN + xposition;
+		int graphical_yposition = SquareShoots.TOP_WORLD_ORIGIN + (int) yposition;
 		g.fillRect(graphical_xposition, graphical_yposition, width, height);		
 	}
 }

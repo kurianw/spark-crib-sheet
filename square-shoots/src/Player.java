@@ -1,6 +1,5 @@
 import java.awt.Color;
 import java.awt.Graphics;
-import java.util.ArrayList;
 
 public class Player extends Collidable {
 
@@ -17,6 +16,11 @@ public class Player extends Collidable {
 	public enum Direction {
 		RIGHT, LEFT
 	}
+	
+	// Direction Enum
+	private enum Stage {
+		ALIVE, DEAD, WON
+	}
 
 	// Variables
 	public int xspeed;
@@ -25,9 +29,8 @@ public class Player extends Collidable {
 	public String eyes;
 
 	// private variables
-	private int old_xposition;
-	private double old_yposition;
 	private Direction direction;
+	private Stage stage;
 
 	public Player(int xposition, double yposition, String color, String eyes, Direction start_direction) {
 		this.xposition = xposition;
@@ -35,6 +38,8 @@ public class Player extends Collidable {
 		this.color = color;
 		this.eyes = eyes;
 		this.direction = start_direction;
+
+		this.stage = Stage.ALIVE;
 		this.width = BODY_WIDTH;
 		this.height = BODY_HEIGHT;
 	};
@@ -57,20 +62,13 @@ public class Player extends Collidable {
 		xspeed = 0;
 	}
 
-	public void update(ArrayList<Collidable> potential_collisions, boolean debug) {
-		old_xposition = xposition;
-		old_yposition = yposition;
-		yposition = yposition - yspeed;
-		xposition = xposition + xspeed;
-		ArrayList<Collidable> collisions = new ArrayList<Collidable>();
-		for (Collidable potential_barrier : potential_collisions) {
-			if (collides(potential_barrier, false)) {
-				collisions.add(potential_barrier);
-			}
-		}
-		resolve(collisions);
+	public void verticalStop() {
+		yspeed = 0;
+	}
+
+	public void accelerate() {
 		yspeed = yspeed - g;
-	};
+	}
 
 	public void setColor(String color, String eyes) {
 		this.color = color;
@@ -89,68 +87,68 @@ public class Player extends Collidable {
 		return yposition;
 	};
 
-	public double getXposition() {
+	public int getXposition() {
 		return xposition;
 	}
 
-	public void resolve(ArrayList<Collidable> others) {
-		for (Collidable other : others) {
-			Player xOnlyPlayer = new Player(xposition, old_yposition, "", "", Direction.RIGHT);
-			Player yOnlyPlayer = new Player(old_xposition, yposition, "", "", Direction.RIGHT);
-			if (xOnlyPlayer.collides(other, false)) {
-				xposition = resolveHorizontalAxis(xposition, other);
-			}
-			if (yOnlyPlayer.collides(other, false))
-				yposition = resolveVerticalAxis(yposition, other);
-		}
+	public Delta getDelta() {
+		return new Delta(xspeed, -1 * yspeed);
+	}
+	
+	public boolean isAlive() {
+		return stage != Stage.DEAD;
 	}
 
-	private int resolveHorizontalAxis(int new_xposition, Collidable other) {
+	public Player applyDelta(Delta d) {
+		Player moved = new Player(xposition + d.x_component, yposition + d.y_component, color, eyes, direction);
+		moved.xspeed = xspeed;
+		moved.yspeed = yspeed;
+		moved.stage = stage;
+		return moved;
+	}
 
+	public Delta getNewHorizontalDelta(Collidable other) {
 		if (xspeed < 0) { // left
-			if (new_xposition < other.xposition + other.width) {
-				new_xposition = other.xposition + other.width + 1;
-				xspeed = 0;
-			}
-		} else if (xspeed > 0) { // right
-			if (new_xposition + width > other.xposition) {
-				new_xposition = other.xposition - width - 1;
-				xspeed = 0;
-			}
+			return new Delta(other.xposition + other.width + 1 - xposition, 0);
+		} else { // right
+			return new Delta(other.xposition - xposition - width - 1, 0);
 		}
-		return new_xposition;
 	};
 
-	private double resolveVerticalAxis(double new_yposition, Collidable other) {
+	public Delta getNewVerticalDelta(Collidable other) {
 		if (yspeed > 0) { // up
-			if (new_yposition < other.yposition + other.height) {
-				new_yposition = (int) (other.yposition + other.height) + 1;
-				yspeed = 0;
-			}
-		} else if (yspeed < 0) { // down
-			if (new_yposition + height > other.yposition) {
-				new_yposition = (int) (other.yposition - height) - 1;
-				yspeed = 0;
-			}
+			return new Delta(0, other.yposition + other.height + 1 - yposition);
+		} else { // down
+			return new Delta(0, other.yposition - yposition - height - 1);
 		}
-		return new_yposition;
 	}
 
 	public Shot shoot() {
-		int starting_shot_offset = (direction == Direction.LEFT ? 0 : EYE_HORIZONTAL_OFFSET + EYE_WIDTH);
-		return new Shot(starting_shot_offset + xposition, yposition, eyes, direction);
+		int shot_offset = (direction == Direction.LEFT ? -2 : EYE_HORIZONTAL_OFFSET + EYE_WIDTH);
+		return new Shot(shot_offset + xposition, yposition, eyes, direction);
 	}
 
 	void render(Graphics g) {
-		// Fill Body
-		g.setColor(Color.decode(getBodyColor()));
-		int graphical_xposition = (int) (HelloWorld.LEFT_WORLD_ORIGIN + getXposition());
-		int graphical_yposition = (int) (HelloWorld.TOP_WORLD_ORIGIN + getYposition());
-		g.fillRect(graphical_xposition, graphical_yposition, width, height);
+		if (isAlive()) {
+			// Fill Body
+			g.setColor(Color.decode(getBodyColor()));
+			int graphical_xposition = (int) (SquareShoots.LEFT_WORLD_ORIGIN + getXposition());
+			int graphical_yposition = (int) (SquareShoots.TOP_WORLD_ORIGIN + getYposition());
+			g.fillRect(graphical_xposition, graphical_yposition, width, height);
 
-		// Fill Eyes
-		int eye_offset = (direction == Direction.LEFT ? 0 : EYE_HORIZONTAL_OFFSET);
-		g.setColor(Color.decode(getEyeColor()));
-		g.fillRect(eye_offset + graphical_xposition, EYE_VERTICAL_OFFSET + graphical_yposition, EYE_WIDTH, EYE_HEIGHT);
+			// Fill Eyes
+			int eye_offset = (direction == Direction.LEFT ? 0 : EYE_HORIZONTAL_OFFSET);
+			g.setColor(Color.decode(getEyeColor()));
+			g.fillRect(eye_offset + graphical_xposition, EYE_VERTICAL_OFFSET + graphical_yposition, EYE_WIDTH,
+					EYE_HEIGHT);
+		}
+	}
+
+	public void kill() {
+		this.stage = Stage.DEAD;
+	}
+
+	public boolean hasWon() {		
+		return this.stage == Stage.WON;
 	}
 }

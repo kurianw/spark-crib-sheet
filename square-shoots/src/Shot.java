@@ -25,8 +25,8 @@ public class Shot extends Collidable {
 	
 	public void render(Graphics g) {
 		g.setColor(Color.decode(color));
-		int graphical_xposition = (int) (HelloWorld.LEFT_WORLD_ORIGIN + xposition);
-		int graphical_yposition = (int) (HelloWorld.TOP_WORLD_ORIGIN + yposition);
+		int graphical_xposition = (int) (SquareShoots.LEFT_WORLD_ORIGIN + xposition);
+		int graphical_yposition = (int) (SquareShoots.TOP_WORLD_ORIGIN + yposition);
 		g.fillRect(graphical_xposition, graphical_yposition, width, height);
 	}
 }
