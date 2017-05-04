@@ -1,5 +1,6 @@
 import java.awt.Color;
 import java.awt.Graphics;
+import java.util.ArrayList;
 
 public class Player extends Collidable {
 
@@ -102,7 +103,7 @@ public class Player extends Collidable {
 	public Player applyDelta(Delta d) {
 		Player moved = new Player(xposition + d.x_component, yposition + d.y_component, color, eyes, direction);
 		moved.xspeed = xspeed;
-		moved.yspeed = yspeed;
+		moved.yspeed = yspeed;		
 		moved.stage = stage;
 		return moved;
 	}
@@ -124,7 +125,7 @@ public class Player extends Collidable {
 	}
 
 	public Shot shoot() {
-		int shot_offset = (direction == Direction.LEFT ? -2 : EYE_HORIZONTAL_OFFSET + EYE_WIDTH);
+		int shot_offset = (direction == Direction.LEFT ? -3 : EYE_HORIZONTAL_OFFSET + EYE_WIDTH + 3);
 		return new Shot(shot_offset + xposition, yposition, eyes, direction);
 	}
 
@@ -150,5 +151,52 @@ public class Player extends Collidable {
 
 	public boolean hasWon() {		
 		return this.stage == Stage.WON;
+	}
+
+	public void wins() {
+		stage = Stage.WON;		
+	}
+
+	ArrayList<Shot> handleShots(ArrayList<Shot> shots, ArrayList<StageComponent> stage) {
+		ArrayList<Shot> absorbed_shots = new ArrayList<Shot>();			
+		for (Shot shot : shots) {
+			for (StageComponent component : stage) {
+				if (shot.collides(component)) {
+					absorbed_shots.add(shot);
+				}
+			}
+			if (collides(shot) && isAlive()) {
+				if (!hasWon()) {						
+					kill();										
+				}
+				absorbed_shots.add(shot);
+			}
+		}						
+		return absorbed_shots;
+	}
+
+	Player handleNonFatalCollisions(Player other, ArrayList<StageComponent> stage) {
+		Delta delta = getDelta();
+		for (StageComponent stage_component : stage) {
+			delta = updateDelta(delta, stage_component);
+		}		
+		if (other.isAlive() && other != this) {
+			delta = updateDelta(delta, other);
+		}		
+		accelerate();
+		return applyDelta(delta);		
+	}
+
+	Delta updateDelta(Delta original_delta, Collidable other) {
+		Delta new_delta = original_delta;
+		if (applyDelta(new_delta.getHorizontalDelta()).collides(other)) {
+			new_delta = getNewHorizontalDelta(other).add(new_delta.getVerticalDelta());
+			horizontalStop();
+		}
+		if (applyDelta(new_delta.getVerticalDelta()).collides(other)) {
+			new_delta = new_delta.getVerticalDelta().add(getNewVerticalDelta(other));
+			verticalStop();
+		}
+		return new_delta;
 	}
 }

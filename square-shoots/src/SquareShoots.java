@@ -1,14 +1,13 @@
 import java.applet.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-import java.util.ArrayList;
-
-import javax.swing.Timer;
 
 public class SquareShoots extends Applet implements KeyListener, Runnable {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	// Constants
 	public static final int LEFT_WORLD_ORIGIN = 135;
 	public static final int TOP_WORLD_ORIGIN = 195;
@@ -72,7 +71,8 @@ public class SquareShoots extends Applet implements KeyListener, Runnable {
 
 			Player player2 = world_manager.getPlayer(1);
 			if (player2 != null) {
-			} if (e.getKeyCode() == KeyEvent.VK_D) {
+			}
+			if (e.getKeyCode() == KeyEvent.VK_D) {
 				player2.moveRight();
 			} else if (e.getKeyCode() == KeyEvent.VK_A) {
 				player2.moveLeft();
@@ -97,11 +97,11 @@ public class SquareShoots extends Applet implements KeyListener, Runnable {
 
 		Player player2 = world_manager.getPlayer(1);
 		if (player2 != null) {
-		}
-		if (e.getKeyCode() == KeyEvent.VK_D) {
-			player2.horizontalStop();
-		} else if (e.getKeyCode() == KeyEvent.VK_A) {
-			player2.horizontalStop();
+			if (e.getKeyCode() == KeyEvent.VK_D) {
+				player2.horizontalStop();
+			} else if (e.getKeyCode() == KeyEvent.VK_A) {
+				player2.horizontalStop();
+			}
 		}
 	}
 }
